@@ -1,32 +1,76 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+using api.Mappers;
+using api.Dtos.Stock;
+using api.Interfaces;
+using api.Helpers;
 
-namespace api.Data
+namespace api.Controllers
 {
-    [Route("[controller]")]
-    public class StockController : Controller
+    [Route("api/stock")]
+    [ApiController]
+    public class StockController(IStockService stockService) : ControllerBase
     {
-        private readonly ILogger<StockController> _logger;
+        private readonly IStockService _stockService = stockService;
 
-        public StockController(ILogger<StockController> logger)
+        // GET list of all stocks and its information via dtos
+        [HttpGet]
+        public async Task<IActionResult> GetAll([FromQuery] StockQueryObject query)
         {
-            _logger = logger;
+            var stockdtos = await _stockService.ListAllStocksAsync(query);
+            return Ok(stockdtos);
         }
 
-        public IActionResult Index()
+        // GET detail of one stock by id 
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetId([FromRoute] int id)
         {
-            return View();
+            var stock = await _stockService.DetailStockByIdAsync(id);
+            if (stock == null)
+            {
+                return NotFound();
+            }
+            return Ok(stock);
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        // POST a new stock
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] PostStockDto postStockDto)
         {
-            return View("Error!");
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            
+            var stock = await _stockService.AddStockAsync(postStockDto);
+            return CreatedAtAction(nameof(GetId), new { id = stock.Id }, stock.ToGetStockDto());
         }
+
+        [HttpPut("{id:int}")]
+        public async Task<IActionResult> Put([FromRoute] int id, [FromBody] PutStockDto putStockDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var stock = await _stockService.EditStockAsync(id, putStockDto);    
+            if (stock == null)
+            {
+                return NotFound();
+            }
+            return Ok(stock);
+        }
+
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> Delete([FromRoute] int id)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var stock = await _stockService.RemoveStockAsync(id);
+            if (stock == null)
+            {
+                return NotFound();
+            }
+            return NoContent();
+        }
+
+        // [HttpPost("sell)]
     }
 }

@@ -1,19 +1,19 @@
-using System.ComponentModel.DataAnnotations.Schema;
-namespace api.Models
+using System.ComponentModel.DataAnnotations;
+using api.Dtos.Comment;
+
+namespace api.Dtos.Stock
 {
-    public class Stock
+    public class GetStockDto
     {
         public int Id { get; set; }
+        [Required]
+        [MaxLength(3, ErrorMessage = "maximum 4 characters")]
         public string Symbol { get; set; } = string.Empty;
         public string CompanyName { get; set; } = string.Empty;
         public string Industry { get; set; } = string.Empty;
-        [Column(TypeName = "decimal(6,2)")]
         public decimal Purchase { get; set; }
-        [Column(TypeName = "decimal(4,2)")]
         public decimal LastDiv { get; set; }
-        [Column(TypeName = "decimal(10,2)")]
         public decimal MarketCap { get; set; }
-        public List<Comment> Comments { get; set; } = new List<Comment>();
+        public List<GetCommentDto> Comments { get; set; } = [];
     }
 }
-
