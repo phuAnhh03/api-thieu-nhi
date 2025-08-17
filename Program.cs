@@ -48,8 +48,13 @@ builder.Services.AddDbContext<ApplicationDBContext>(options =>
 { options.UseSqlServer(connectionString); });
 builder.Services.AddScoped<IStockRepository, StockRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
+builder.Services.AddScoped<IAccountRepository, AccountRepository>();
+
 builder.Services.AddScoped<IStockService, StockService>();
 builder.Services.AddScoped<ICommentService, CommentService>();
+builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+
 
 var app = builder.Build();
 

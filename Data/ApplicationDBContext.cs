@@ -16,12 +16,16 @@ namespace api.Data
             List<IdentityRole> roles = new List<IdentityRole>
             {
                 new() {
+                    Id = "00000000-0000-0000-0000-000000000001",
                     Name = "admin",
-                    NormalizedName = "ADMIN"
+                    NormalizedName = "ADMIN",
+                    ConcurrencyStamp = "00000000-0000-0000-0000-000000000002"
                 },
                 new(){
+                    Id = "00000000-0000-0000-0000-000000000003",
                     Name = "user",
-                    NormalizedName = "USER"
+                    NormalizedName = "USER",
+                    ConcurrencyStamp = "00000000-0000-0000-0000-000000000004"
                 }
             };
             builder.Entity<IdentityRole>().HasData(roles);

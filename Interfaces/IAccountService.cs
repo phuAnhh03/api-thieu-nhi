@@ -1,14 +1,17 @@
-using api.Dtos.Account;
+using api.Dtos.Accounts;
 using api.Models;
 
 namespace api.Interfaces
 {
     public interface IAccountService
     {
-        public Task<List<Account>> GetAllAccAsync();
-        public Task<Account?> GetAccByIdAsync(int id);
-        public Task<Account?> CreateAccAsync(SignInDto signInDto);
-        public Task<Account?> UpdateAccAsync(int id, LogInDto logInDto);
-        public Task<bool?> DeleteAccAsync(int id);
+        Task<List<Account>> GetAllAccAsync();
+        Task<Account?> GetAccByIdAsync(int id);
+        Task<AccountActionResultDto> CreateAccAsync(SignInDto signInDto);
+        Task<AccountActionResultDto?> UpdateAccAsync(int id, SignInDto signInDto);
+        Task<AccountActionResultDto?> DeleteAccAsync(int id);
+        Task<AccountActionResultDto?> CreateAdminAsync(LogInDto logInDto);
+        Task<AccountActionResultDto> LogInAccAsync(LogInDto logInDto);
+        AccountInfoDto GetAccountJwtDto(AccountActionResultDto accountActionResultDto);
     }
 }

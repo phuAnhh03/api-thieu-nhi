@@ -1,26 +1,46 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using api.Data;
-using api.Dtos.Account;
+using api.Dtos.Accounts;
 using api.Interfaces;
 using api.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace api.Repositories
 {
-    public class AccountRepository : IAccountRepository
+    public class AccountRepository (UserManager<Account> userManager, SignInManager<Account> signInManager): IAccountRepository
     {
-        public async Task<Account?> AddAccAsync(SignInDto signInDto)
+        private readonly UserManager<Account> _userManager = userManager;
+        private readonly SignInManager<Account> _signInManager = signInManager;
+
+        public async Task<bool> AccExistAsync(string userName, string email)
+        {
+            var nameExist = await _userManager.Users.FirstOrDefaultAsync(x => x.UserName == userName);
+            var emailExist = await _userManager.Users.FirstOrDefaultAsync(x => x.Email == email);
+            if (nameExist == null && emailExist == null) return false;
+            return true;
+        }
+
+        public async Task<AccountActionResultDto> AddAccAsync(SignInDto signInDto)
         {
             var acc = new Account
             {
                 UserName = signInDto.AppUserName,
-                Email = signInDto.Email
+                Email = signInDto.Email,
             };
+            var result = new AccountActionResultDto{User = acc};
+            var createAcc = await _userManager.CreateAsync(acc, signInDto.Password);
+            if (createAcc.Succeeded)
+            {
+                var roleResult = await _userManager.AddToRoleAsync(acc, "User");
+                if (roleResult.Succeeded) result.Succeeded = true;
+                else result.IdentityErrors = roleResult.Errors;
+            }
+            else result.IdentityErrors = createAcc.Errors; 
+            return result;
+        }
+
+        public Task<AccountActionResultDto?> AddAdminAsync(SignInDto signInDto)
+        {
             throw new NotImplementedException();
-            
         }
 
         public Task<Account?> DetailAccByIdAsync(int id)
@@ -28,7 +48,7 @@ namespace api.Repositories
             throw new NotImplementedException();
         }
 
-        public Task<Account?> EditAccAsync(int id, SignInDto signInDto)
+        public Task<AccountActionResultDto?> EditAccAsync(int id, SignInDto signInDto)
         {
             throw new NotImplementedException();
         }
@@ -38,7 +58,27 @@ namespace api.Repositories
             throw new NotImplementedException();
         }
 
-        public Task<bool?> RemoveAccAsync(int id)
+        public async Task<AccountActionResultDto> LogInAsync(LogInDto logInDto)
+        {
+            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.UserName == logInDto.AppUserNameOrEmail);
+            if (user == null) user = await _userManager.Users.FirstOrDefaultAsync(x => x.Email == logInDto.AppUserNameOrEmail);
+            if (user != null)
+            {
+                var result = await _signInManager.CheckPasswordSignInAsync(user, logInDto.Password, false);
+                return new AccountActionResultDto
+                {
+                    User = user,
+                    Succeeded = result.Succeeded,
+                    SignInErrors = result.ToString(),
+                };
+            }
+            return new AccountActionResultDto
+            {
+                Succeeded = false,
+            };
+        }
+
+        public Task<AccountActionResultDto?> RemoveAccAsync(int id)
         {
             throw new NotImplementedException();
         }
