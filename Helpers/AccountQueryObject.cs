@@ -1,9 +1,14 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
 namespace api.Helpers
 {
-    public class CommentQueryObject
+    public class AccountQueryObject
     {
-        public string? Content { get; set; } = null;
-        public string? Title { get; set; } = null;
+        public string? UserName { get; set; }
+        public string? Email { get; set; }
         public string? SortBy { get; set; } = null;
         public bool IsDescending { get; set; } = true;
         public int PageNumber { get; set; } = 1;

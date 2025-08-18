@@ -1,4 +1,5 @@
 using api.Dtos.Accounts;
+using api.Helpers;
 using api.Interfaces;
 using api.Models;
 using Microsoft.AspNetCore.Identity;
@@ -32,30 +33,73 @@ namespace api.Repositories
             {
                 var roleResult = await _userManager.AddToRoleAsync(acc, "User");
                 if (roleResult.Succeeded) result.Succeeded = true;
-                else result.IdentityErrors = roleResult.Errors;
+                else result.IdentityErrors = roleResult.Errors.Select(e => e.Description);
             }
-            else result.IdentityErrors = createAcc.Errors; 
+            else result.IdentityErrors = createAcc.Errors.Select(e => e.Description); 
             return result;
         }
 
-        public Task<AccountActionResultDto?> AddAdminAsync(SignInDto signInDto)
+        public async Task<AccountActionResultDto?> AddAdminAsync(SignInDto signInDto)
         {
-            throw new NotImplementedException();
+            var acc = new Account
+            {
+                UserName = signInDto.AppUserName,
+                Email = signInDto.Email,
+            };
+            var result = new AccountActionResultDto{User = acc};
+            var createAcc = await _userManager.CreateAsync(acc, signInDto.Password);
+            if (createAcc.Succeeded)
+            {
+                var roleResult = await _userManager.AddToRoleAsync(acc, "Admin");
+                if (roleResult.Succeeded) result.Succeeded = true;
+                else result.IdentityErrors = roleResult.Errors.Select(e => e.Description);
+            }
+            else result.IdentityErrors = createAcc.Errors.Select(e => e.Description); 
+            return result;
         }
 
-        public Task<Account?> DetailAccByIdAsync(int id)
+        public async Task<Account?> DetailAccByUserNameAsync(string userName)
         {
-            throw new NotImplementedException();
+            var acc = await _userManager.Users
+            .Include(u => u.Ownerships)
+            .ThenInclude(o => o.Stock)
+            .FirstOrDefaultAsync(u => u.UserName == userName);
+            return acc;
         }
 
-        public Task<AccountActionResultDto?> EditAccAsync(int id, SignInDto signInDto)
+        public async Task<AccountActionResultDto?> EditAccAsync(string userName, SignInDto signInDto)
         {
-            throw new NotImplementedException();
+            var acc = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == userName);
+            if (acc == null) return null;
+            var token = await _userManager.GeneratePasswordResetTokenAsync(acc);
+            var result = await _userManager.ResetPasswordAsync(acc, token, signInDto.Password);
+            var setUserNameResult = await _userManager.SetUserNameAsync(acc, signInDto.AppUserName);
+            var setEmailResult = await _userManager.SetEmailAsync(acc, signInDto.Email);
+            return new AccountActionResultDto
+            {
+                User = acc,
+                Succeeded = result.Succeeded,
+                IdentityErrors = result.Errors.Select(e => e.Description)
+            };
         }
 
-        public Task<List<Account>> ListAllAccAsync()
+        public async Task<List<Account>> ListAllAccAsync(AccountQueryObject query)
         {
-            throw new NotImplementedException();
+            var skipNumber = (query.PageNumber - 1) * query.PageSize;
+            var accounts = _userManager.Users.AsQueryable();
+    
+            if (!string.IsNullOrWhiteSpace(query.UserName))
+                accounts = accounts.Where(c => c.UserName != null && c.UserName!.Contains(query.UserName));
+            else if (!string.IsNullOrWhiteSpace(query.Email))
+                accounts = accounts.Where(c => c.Email != null && c.Email!.Contains(query.Email));
+            if (!string.IsNullOrWhiteSpace(query.SortBy))
+            {
+                if (query.SortBy.Equals("UserName", StringComparison.OrdinalIgnoreCase))
+                    accounts = query.IsDescending ? accounts.OrderByDescending(s => s.UserName) : accounts.OrderBy(s => s.UserName);
+                else if (query.SortBy.Equals("Email", StringComparison.OrdinalIgnoreCase)) 
+                    accounts = query.IsDescending ? accounts.OrderByDescending(s => s.Email) : accounts.OrderBy(s => s.Email) ;
+            }
+            return await accounts.Skip(skipNumber).Take(query.PageSize).ToListAsync();
         }
 
         public async Task<AccountActionResultDto> LogInAsync(LogInDto logInDto)
@@ -78,9 +122,16 @@ namespace api.Repositories
             };
         }
 
-        public Task<AccountActionResultDto?> RemoveAccAsync(int id)
+        public async Task<AccountActionResultDto?> RemoveAccAsync(string userName)
         {
-            throw new NotImplementedException();
+            var acc = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == userName);
+            if (acc == null) return null;
+            var result = await _userManager.DeleteAsync(acc);
+            return new AccountActionResultDto
+            {
+                Succeeded = result.Succeeded,
+                IdentityErrors = result.Errors.Select(e => e.Description)
+            };
         }
     }
 }

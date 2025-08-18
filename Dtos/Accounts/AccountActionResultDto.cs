@@ -9,9 +9,9 @@ namespace api.Dtos.Accounts
 {
     public class AccountActionResultDto
     {
-        public Account User { get; set; } = new Account();
+        public Account User { get; set; } = new();
         public bool Succeeded { get; set; }
-        public IEnumerable<IdentityError> IdentityErrors { get; set; } = [];
+        public IEnumerable<string> IdentityErrors { get; set; } = [];
         public string SignInErrors { get; set; } = string.Empty;
     }
 }

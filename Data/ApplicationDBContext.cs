@@ -10,6 +10,7 @@ namespace api.Data
         public ApplicationDBContext(DbContextOptions dbContextOptions) : base(dbContextOptions) { }
         public DbSet<Stock> Stocks { get; set; }
         public DbSet<Comment> Comments { get; set; }
+        public DbSet<Ownership> Ownerships { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -29,6 +30,15 @@ namespace api.Data
                 }
             };
             builder.Entity<IdentityRole>().HasData(roles);
+            builder.Entity<Ownership>(x => { x.HasKey(p => new { p.AccountId, p.StockId }); });
+            builder.Entity<Ownership>()
+                .HasOne(a => a.Account)
+                .WithMany(a => a.Ownerships)
+                .HasForeignKey(a => a.AccountId);
+            builder.Entity<Ownership>()
+                .HasOne(s => s.Stock)
+                .WithMany(s => s.Ownerships)
+                .HasForeignKey(s => s.StockId);
         }
     }
 }

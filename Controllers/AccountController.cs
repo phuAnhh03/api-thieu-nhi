@@ -1,4 +1,5 @@
 using api.Dtos.Accounts;
+using api.Helpers;
 using api.Interfaces;
 using api.Models;
 using Microsoft.AspNetCore.Identity;
@@ -8,10 +9,9 @@ namespace api.Controllers
 {
     [Route("api/account")]
     [ApiController]
-    public class AccountController(IAccountService accountService, ITokenService tokenService) : ControllerBase
+    public class AccountController(IAccountService accountService) : ControllerBase
     {
         private readonly IAccountService _accountService = accountService;
-        private readonly ITokenService _tokenService = tokenService;
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] SignInDto signInDto)
@@ -20,8 +20,8 @@ namespace api.Controllers
             {
                 if (!ModelState.IsValid) return BadRequest(ModelState);
                 var result = await _accountService.CreateAccAsync(signInDto);
-                if (result.Succeeded != true) return StatusCode(500, result.IdentityErrors.Select(e => e.Description));
-                return Ok(_accountService.GetAccountJwtDto(result));   
+                if (result.Succeeded != true) return StatusCode(500, result.IdentityErrors);
+                return Ok(_accountService.GetAccountJwtDto(result));
             }
             catch (Exception ex)
             {
@@ -36,6 +36,37 @@ namespace api.Controllers
             var result = await _accountService.LogInAccAsync(logInDto);
             if (result.Succeeded) return Ok(_accountService.GetAccountJwtDto(result));
             else return Unauthorized("Username or Email incorrect");
+        }
+
+        [HttpGet("{username:string}")]
+        public async Task<IActionResult> GetByUserName([FromRoute] string username)
+        {
+            var result = await _accountService.GetAccByUserNameAsync(username);
+            if (result == null) return BadRequest("Username not found");
+            return Ok(result);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Get([FromQuery] AccountQueryObject query)
+        {
+            var accounts = await _accountService.GetAllAccAsync(query);
+            return Ok(accounts);
+        }
+
+        [HttpPut("{username:string}")]
+        public async Task<IActionResult> Put([FromRoute] string userName, [FromBody] SignInDto signInDto)
+        {
+            var account = await _accountService.UpdateAccAsync(userName, signInDto);
+            if (account == null) return BadRequest("Username not found");
+            return Ok(account);
+        }
+
+        [HttpDelete("{username:string}")]
+        public async Task<IActionResult> Delete([FromRoute] string userName)
+        {
+            var account = await _accountService.DeleteAccAsync(userName);
+            if (account == null) return BadRequest("Username not found");
+            return NoContent();
         }
     }
 }

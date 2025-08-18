@@ -14,13 +14,13 @@ namespace api.Services
     public class TokenService(IConfiguration config) : ITokenService
     {
         private readonly IConfiguration _config = config;
-        private readonly SymmetricSecurityKey? _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["JWT:SigningKey"]));
+        private readonly SymmetricSecurityKey? _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["JWT:SigningKey"] ?? throw new InvalidOperationException("Signing key not found.")));
         public string CreateToken(Account acc)
         {
             var claims = new List<Claim>
             {
-                new Claim(JwtRegisteredClaimNames.Email, acc.Email),
-                new Claim(JwtRegisteredClaimNames.GivenName ,acc.UserName)
+                new Claim(JwtRegisteredClaimNames.Email, acc.Email!),
+                new Claim(JwtRegisteredClaimNames.GivenName ,acc.UserName!)
             };
             var creds = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature);
             var tokenDiscriptor = new SecurityTokenDescriptor

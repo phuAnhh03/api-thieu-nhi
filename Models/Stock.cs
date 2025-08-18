@@ -13,7 +13,8 @@ namespace api.Models
         public decimal LastDiv { get; set; }
         [Column(TypeName = "decimal(10,2)")]
         public decimal MarketCap { get; set; }
-        public List<Comment> Comments { get; set; } = new List<Comment>();
+        public List<Comment> Comments { get; set; } = null!;
+        public List<Ownership> Ownerships{ get; set; } = null!;
     }
 }
 

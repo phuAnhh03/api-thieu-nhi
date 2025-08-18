@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.Dtos.Accounts;
+using api.Helpers;
 using api.Interfaces;
+using api.Mappers;
 using api.Models;
 
 namespace api.Services
@@ -17,24 +19,28 @@ namespace api.Services
             return await _accountRepository.AddAccAsync(signInDto);
         }
 
-        public Task<AccountActionResultDto?> CreateAdminAsync(LogInDto logInDto)
+        public async Task<AccountActionResultDto?> CreateAdminAsync(SignInDto signInDto)
         {
-            throw new NotImplementedException();
+            return await _accountRepository.AddAdminAsync(signInDto);
         }
 
-        public Task<AccountActionResultDto?> DeleteAccAsync(int id)
+        public async Task<AccountActionResultDto?> DeleteAccAsync(string userName)
         {
-            throw new NotImplementedException();
+            var acc = await _accountRepository.RemoveAccAsync(userName);
+            if (acc == null) return null;
+            return acc;
         }
 
-        public Task<Account?> GetAccByIdAsync(int id)
+        public async Task<AccountStockOwnershipDto?> GetAccByUserNameAsync(string userName)
         {
-            throw new NotImplementedException();
+            var acc = await _accountRepository.DetailAccByUserNameAsync(userName);
+            if (acc == null) return null;
+            return acc.ToAccountStockOwnership();
         }
 
-        public Task<List<Account>> GetAllAccAsync()
+        public async Task<List<Account>> GetAllAccAsync(AccountQueryObject query)
         {
-            throw new NotImplementedException();
+            return await _accountRepository.ListAllAccAsync(query);
         }
 
         public AccountInfoDto GetAccountJwtDto(AccountActionResultDto accountActionResultDto)
@@ -53,9 +59,11 @@ namespace api.Services
             return await _accountRepository.LogInAsync(logInDto);
         }
 
-        public Task<AccountActionResultDto?> UpdateAccAsync(int id, SignInDto signInDto)
+        public async Task<AccountActionResultDto?> UpdateAccAsync(string userName, SignInDto signInDto)
         {
-            throw new NotImplementedException();
+            var acc = await _accountRepository.EditAccAsync(userName, signInDto);
+            if (acc == null) return null;
+            return acc;
         }
     }
 }
