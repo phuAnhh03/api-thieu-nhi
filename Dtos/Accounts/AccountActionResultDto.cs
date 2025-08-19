@@ -1,15 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using api.Models;
-using Microsoft.AspNetCore.Identity;
 
 namespace api.Dtos.Accounts
 {
     public class AccountActionResultDto
     {
-        public Account User { get; set; } = new();
+        public string UserName { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
         public bool Succeeded { get; set; }
         public IEnumerable<string> IdentityErrors { get; set; } = [];
         public string SignInErrors { get; set; } = string.Empty;

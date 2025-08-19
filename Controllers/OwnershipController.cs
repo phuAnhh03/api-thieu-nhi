@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace api.Controllers
 {
+    [Route("api/ownership")]
+    [ApiController]
     public class OwnershipController(IOwnershipService ownershipService) : ControllerBase
     {
         private readonly IOwnershipService _ownershipService = ownershipService;

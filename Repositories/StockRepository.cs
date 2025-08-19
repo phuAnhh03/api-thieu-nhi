@@ -1,5 +1,5 @@
 using api.Data;
-using api.Dtos.Stock;
+using api.Dtos.Stocks;
 using api.Helpers;
 using api.Interfaces;
 using api.Mappers;
@@ -15,6 +15,7 @@ namespace api.Repositories
         public async Task<Stock> CreateStockAsync(PostStockDto postStockDto)
         {
             var stock = postStockDto.ToStockFromPostStockDto();
+            stock.Comments = new List<Comment>();
             _context.Stocks.Add(stock);
             await _context.SaveChangesAsync();
             return stock;

@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using api.Mappers;
-using api.Dtos.Stock;
+using api.Dtos.Stocks;
 using api.Interfaces;
 using api.Helpers;
 
@@ -25,10 +25,7 @@ namespace api.Controllers
         public async Task<IActionResult> GetId([FromRoute] int id)
         {
             var stock = await _stockService.DetailStockByIdAsync(id);
-            if (stock == null)
-            {
-                return NotFound();
-            }
+            if (stock == null) return NotFound();
             return Ok(stock);
         }
 
@@ -36,38 +33,26 @@ namespace api.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] PostStockDto postStockDto)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-            
+            if (!ModelState.IsValid) return BadRequest(ModelState);
             var stock = await _stockService.AddStockAsync(postStockDto);
-            return CreatedAtAction(nameof(GetId), new { id = stock.Id }, stock.ToGetStockDto());
+            return CreatedAtAction(nameof(GetId), new { id = stock.Id }, stock);
         }
 
         [HttpPut("{id:int}")]
         public async Task<IActionResult> Put([FromRoute] int id, [FromBody] PutStockDto putStockDto)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
+            if (!ModelState.IsValid) return BadRequest(ModelState);
             var stock = await _stockService.EditStockAsync(id, putStockDto);    
-            if (stock == null)
-            {
-                return NotFound();
-            }
+            if (stock == null) return NotFound();
             return Ok(stock);
         }
 
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
+            if (!ModelState.IsValid) return BadRequest(ModelState);
             var stock = await _stockService.RemoveStockAsync(id);
-            if (stock == null)
-            {
-                return NotFound();
-            }
+            if (stock == null) return NotFound();
             return NoContent();
         }
 

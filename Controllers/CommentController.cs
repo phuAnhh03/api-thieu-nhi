@@ -1,7 +1,6 @@
-using api.Dtos.Comment;
+using api.Dtos.Comments;
 using api.Helpers;
 using api.Interfaces;
-using api.Mappers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api.Controllers

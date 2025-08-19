@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using api.Data;
 using api.Dtos.Ownerships;
@@ -32,9 +29,11 @@ namespace api.Repositories
             return ownership;
         }
 
-        public List<Task<Ownership>> GetAll(OwnershipQueryObject query)
+        public async Task<List<Ownership>> GetAll(OwnershipQueryObject query)
         {
-            throw new NotImplementedException();
+            var skipNumber = (query.PageNumber - 1) * query.PageSize;
+            var ownerships = _context.Ownerships.AsQueryable();
+            return await ownerships.Skip(skipNumber).Take(query.PageSize).ToListAsync();
         }
 
         public async Task<Ownership?> UpdateOwnershipAsync(OwnershipDto ownershipDto)

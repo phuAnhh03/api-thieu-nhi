@@ -1,12 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using api.Dtos.Ownerships;
 using api.Helpers;
 using api.Interfaces;
 using api.Mappers;
-using api.Repositories;
 
 namespace api.Services
 {
@@ -30,9 +25,10 @@ namespace api.Services
             return result;
         }
 
-        public List<Task<OwnershipDto>> ListAll(OwnershipQueryObject query)
+        public async Task<List<OwnershipDto>> ListAll(OwnershipQueryObject query)
         {
-            throw new NotImplementedException();
+            var ownership = await _ownershipRepository.GetAll(query);
+           return ownership.Select(x => x.ToOwnershipDto()).ToList();
         }
 
         public async Task<bool?> RemoveOwnershipAsync(OwnershipDto ownershipDto)

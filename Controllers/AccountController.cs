@@ -1,8 +1,6 @@
 using api.Dtos.Accounts;
 using api.Helpers;
 using api.Interfaces;
-using api.Models;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api.Controllers
@@ -21,7 +19,7 @@ namespace api.Controllers
                 if (!ModelState.IsValid) return BadRequest(ModelState);
                 var result = await _accountService.CreateAccAsync(signInDto);
                 if (result.Succeeded != true) return StatusCode(500, result.IdentityErrors);
-                return Ok(_accountService.GetAccountJwtDto(result));
+                return Ok(_accountService.GetAccountJwtDto(result.UserName, result.Email));
             }
             catch (Exception ex)
             {
@@ -34,11 +32,11 @@ namespace api.Controllers
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
             var result = await _accountService.LogInAccAsync(logInDto);
-            if (result.Succeeded) return Ok(_accountService.GetAccountJwtDto(result));
+            if (result.Succeeded) return Ok(_accountService.GetAccountJwtDto(result.UserName, result.Email));
             else return Unauthorized("Username or Email incorrect");
         }
 
-        [HttpGet("{username:string}")]
+        [HttpGet("{username}")]
         public async Task<IActionResult> GetByUserName([FromRoute] string username)
         {
             var result = await _accountService.GetAccByUserNameAsync(username);
@@ -53,7 +51,7 @@ namespace api.Controllers
             return Ok(accounts);
         }
 
-        [HttpPut("{username:string}")]
+        [HttpPut("{username}")]
         public async Task<IActionResult> Put([FromRoute] string userName, [FromBody] SignInDto signInDto)
         {
             var account = await _accountService.UpdateAccAsync(userName, signInDto);
@@ -61,7 +59,7 @@ namespace api.Controllers
             return Ok(account);
         }
 
-        [HttpDelete("{username:string}")]
+        [HttpDelete("{username}")]
         public async Task<IActionResult> Delete([FromRoute] string userName)
         {
             var account = await _accountService.DeleteAccAsync(userName);

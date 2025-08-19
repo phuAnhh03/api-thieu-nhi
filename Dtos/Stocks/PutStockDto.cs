@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace api.Dtos.Stock
+namespace api.Dtos.Stocks
 
 {
     public class PutStockDto

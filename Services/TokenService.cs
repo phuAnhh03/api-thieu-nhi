@@ -1,10 +1,6 @@
-using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 using api.Interfaces;
 using api.Models;
 using Microsoft.IdentityModel.Tokens;
@@ -15,12 +11,12 @@ namespace api.Services
     {
         private readonly IConfiguration _config = config;
         private readonly SymmetricSecurityKey? _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["JWT:SigningKey"] ?? throw new InvalidOperationException("Signing key not found.")));
-        public string CreateToken(Account acc)
+        public string CreateToken(string username, string email)
         {
             var claims = new List<Claim>
             {
-                new Claim(JwtRegisteredClaimNames.Email, acc.Email!),
-                new Claim(JwtRegisteredClaimNames.GivenName ,acc.UserName!)
+                new Claim(JwtRegisteredClaimNames.Email, email),
+                new Claim(JwtRegisteredClaimNames.GivenName ,username)
             };
             var creds = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature);
             var tokenDiscriptor = new SecurityTokenDescriptor
