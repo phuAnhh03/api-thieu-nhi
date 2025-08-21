@@ -1,11 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 namespace api.Dtos.Ownerships
 {
-    public class OwnershipDto
+    public class GetOwnershipDto
     {
         public string AccountId { get; set; } = string.Empty;
         public int StockId { get; set; }

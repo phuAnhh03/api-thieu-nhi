@@ -22,7 +22,7 @@ namespace api.Repositories
 
         public async Task<Ownership?> DeleteOwnershipAsync(OwnershipDto ownershipDto)
         {
-            var ownership = await _context.Ownerships.FirstOrDefaultAsync(o => o.Id == ownershipDto.Id);
+            var ownership = await _context.Ownerships.FirstOrDefaultAsync(o => o.AccountId == ownershipDto.AccountId && o.StockId == ownershipDto.StockId);
             if (ownership == null) return null;
             _context.Remove(ownership);
             _context.SaveChanges();
@@ -38,7 +38,7 @@ namespace api.Repositories
 
         public async Task<Ownership?> UpdateOwnershipAsync(OwnershipDto ownershipDto)
         {
-            var ownership = await _context.Ownerships.FirstOrDefaultAsync(o => o.Id == ownershipDto.Id);
+            var ownership = await _context.Ownerships.FirstOrDefaultAsync(o => o.AccountId == ownershipDto.AccountId && o.StockId == ownershipDto.StockId);
             if (ownership == null) return null;
             ownership.AccountId = ownershipDto.AccountId;
             ownership.StockId = ownershipDto.StockId;

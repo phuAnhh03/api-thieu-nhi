@@ -13,6 +13,6 @@ namespace api.Interfaces
         Task<AccountActionResultDto?> DeleteAccAsync(string userName);
         Task<AccountActionResultDto?> CreateAdminAsync(SignInDto signInDto);
         Task<AccountActionResultDto> LogInAccAsync(LogInDto logInDto);
-        AccountInfoDto GetAccountJwtDto(string username, string email);
+        GetJwtDto GetAccountJwtDto(string id, string username, string email);
     }
 }

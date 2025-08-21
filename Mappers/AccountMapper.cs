@@ -10,6 +10,7 @@ namespace api.Mappers
             if (acc.UserName == null) throw new ArgumentNullException(nameof(acc));
             return new AccountStockOwnershipDto
             {
+                Id = acc.Id,
                 UserName = acc.UserName,
                 Ownerships = acc.Ownerships.Select(o => new StockOwnershipDto
                 {

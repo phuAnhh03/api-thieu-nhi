@@ -5,9 +5,9 @@ namespace api.Interfaces
 {
     public interface IOwnershipService
     {
-        Task<List<OwnershipDto>> ListAll(OwnershipQueryObject query);
-        Task<OwnershipDto?> AddOwnershipAsync(OwnershipDto ownershipDto);
-        Task<OwnershipDto?> EditOwnershipAsync(OwnershipDto ownershipDto);
+        Task<List<GetOwnershipDto>> ListAll(OwnershipQueryObject query);
+        Task<GetOwnershipDto?> AddOwnershipAsync(OwnershipDto ownershipDto);
+        Task<GetOwnershipDto?> EditOwnershipAsync(OwnershipDto ownershipDto);
         Task<bool?> RemoveOwnershipAsync(OwnershipDto ownershipDto);
     }
 }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using api.Data;
 
@@ -11,9 +12,11 @@ using api.Data;
 namespace api.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20250821021923_UpdateOwnership")]
+    partial class UpdateOwnership
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -267,16 +270,19 @@ namespace api.Migrations
 
             modelBuilder.Entity("api.Models.Ownership", b =>
                 {
-                    b.Property<string>("AccountId")
+                    b.Property<string>("UserName")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("StockId")
                         .HasColumnType("int");
 
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
                     b.Property<int>("Owned")
                         .HasColumnType("int");
 
-                    b.HasKey("AccountId", "StockId");
+                    b.HasKey("UserName", "StockId");
 
                     b.HasIndex("StockId");
 
@@ -381,15 +387,15 @@ namespace api.Migrations
 
             modelBuilder.Entity("api.Models.Ownership", b =>
                 {
-                    b.HasOne("api.Models.Account", "Account")
-                        .WithMany("Ownerships")
-                        .HasForeignKey("AccountId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("api.Models.Stock", "Stock")
                         .WithMany("Ownerships")
                         .HasForeignKey("StockId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("api.Models.Account", "Account")
+                        .WithMany("Ownerships")
+                        .HasForeignKey("UserName")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

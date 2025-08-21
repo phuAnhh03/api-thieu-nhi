@@ -19,7 +19,7 @@ namespace api.Controllers
                 if (!ModelState.IsValid) return BadRequest(ModelState);
                 var result = await _accountService.CreateAccAsync(signInDto);
                 if (result.Succeeded != true) return StatusCode(500, result.IdentityErrors);
-                return Ok(_accountService.GetAccountJwtDto(result.UserName, result.Email));
+                return Ok(_accountService.GetAccountJwtDto(result.Id, result.UserName, result.Email));
             }
             catch (Exception ex)
             {
@@ -32,7 +32,7 @@ namespace api.Controllers
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
             var result = await _accountService.LogInAccAsync(logInDto);
-            if (result.Succeeded) return Ok(_accountService.GetAccountJwtDto(result.UserName, result.Email));
+            if (result.Succeeded) return Ok(_accountService.GetAccountJwtDto(result.Id,result.UserName, result.Email));
             else return Unauthorized("Username or Email incorrect");
         }
 

@@ -9,26 +9,26 @@ namespace api.Services
     {
         private readonly IOwnershipRepository _ownershipRepository = ownershipRepository;
 
-        public async Task<OwnershipDto?> AddOwnershipAsync(OwnershipDto ownershipDto)
+        public async Task<GetOwnershipDto?> AddOwnershipAsync(OwnershipDto ownershipDto)
         {
             var ownership = await _ownershipRepository.CreateOwnershipAsync(ownershipDto);
             if (ownership == null) return null;
-            var result = ownership.ToOwnershipDto();
+            var result = ownership.ToGetOwnershipDto();
             return result;
         }
 
-        public async Task<OwnershipDto?> EditOwnershipAsync(OwnershipDto ownershipDto)
+        public async Task<GetOwnershipDto?> EditOwnershipAsync(OwnershipDto ownershipDto)
         {
             var ownership = await _ownershipRepository.UpdateOwnershipAsync(ownershipDto);
             if (ownership == null) return null;
-            var result = ownership.ToOwnershipDto();
+            var result = ownership.ToGetOwnershipDto();
             return result;
         }
 
-        public async Task<List<OwnershipDto>> ListAll(OwnershipQueryObject query)
+        public async Task<List<GetOwnershipDto>> ListAll(OwnershipQueryObject query)
         {
             var ownership = await _ownershipRepository.GetAll(query);
-           return ownership.Select(x => x.ToOwnershipDto()).ToList();
+           return ownership.Select(x => x.ToGetOwnershipDto()).ToList();
         }
 
         public async Task<bool?> RemoveOwnershipAsync(OwnershipDto ownershipDto)

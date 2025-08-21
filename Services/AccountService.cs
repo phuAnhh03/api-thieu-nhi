@@ -34,6 +34,7 @@ namespace api.Services
                 else result.IdentityErrors = roleResult.Errors.Select(e => e.Description);
             }
             else result.IdentityErrors = createAcc.Errors.Select(e => e.Description); 
+            result.Id = acc.Id;
             return result;
         }
 
@@ -53,6 +54,7 @@ namespace api.Services
                 else result.IdentityErrors = roleResult.Errors.Select(e => e.Description);
             }
             else result.IdentityErrors = createAcc.Errors.Select(e => e.Description); 
+            result.Id = acc.Id;
             return result;
         }
 
@@ -81,10 +83,11 @@ namespace api.Services
             return list.Select(x => x.ToAccountStockOwnership()).ToList();
         }
 
-        public AccountInfoDto GetAccountJwtDto(string username, string email)
+        public GetJwtDto GetAccountJwtDto(string id, string username, string email)
         {
-            var acc = new AccountInfoDto
+            var acc = new GetJwtDto
             {
+                Id = id,
                 UserName = username,
                 Email = email,
                 Token = _tokenService.CreateToken(username, email)
@@ -101,6 +104,7 @@ namespace api.Services
                 var result = await _signInManager.CheckPasswordSignInAsync(user, logInDto.Password, false);
                 return new AccountActionResultDto
                 {
+                    Id = user.Id,
                     UserName = user.UserName!,
                     Email = user.Email!,
                     Succeeded = result.Succeeded,
@@ -123,6 +127,7 @@ namespace api.Services
             var setEmailResult = await _userManager.SetEmailAsync(acc, signInDto.Email);
             return new AccountActionResultDto
             {
+                Id = acc.Id,
                 UserName = acc.UserName!,
                 Email = acc.Email!,
                 Succeeded = result.Succeeded,

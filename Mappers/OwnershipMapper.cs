@@ -15,11 +15,10 @@ namespace api.Mappers
             };
         }
 
-        public static OwnershipDto ToOwnershipDto(this Ownership ownership)
+        public static GetOwnershipDto ToGetOwnershipDto(this Ownership ownership)
         {
-            return new OwnershipDto
+            return new GetOwnershipDto
             {
-                Id = ownership.Id,
                 AccountId = ownership.AccountId,
                 StockId = ownership.StockId,
                 Amount = ownership.Owned
